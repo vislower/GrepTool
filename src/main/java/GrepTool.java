@@ -37,7 +37,7 @@ class GrepTool {
 
         }
 
-        return sb.toString();
+        return sb.length() == 0 ? "" : sb.toString();
     }
 
     boolean matchPattern(String patternToMatch, StringBuilder sb, Set<String> grepFlags, String line, int lineNumber) {
@@ -52,10 +52,19 @@ class GrepTool {
                 if (grepFlags.contains("-l")) {
                     return true;
                 }
-                sb.append(lineBackup);
+
+                if (grepFlags.contains("-n")) {
+                    sb.append(lineNumber + ":" + lineBackup);
+                } else {
+                    sb.append(lineBackup);
+                }
                 return true;
             } else if (grepFlags.contains("-v")) {
-                sb.append(lineBackup);
+                if (grepFlags.contains("-n")) {
+                    sb.append(lineNumber + ":" + lineBackup);
+                } else {
+                    sb.append(lineBackup);
+                }
                 return true;
             } else {
                 return false;
@@ -69,11 +78,19 @@ class GrepTool {
             if (grepFlags.contains("-l")) {
                 return true;
             }
-            sb.append(lineBackup);
+            if (grepFlags.contains("-n")) {
+                    sb.append(lineNumber + ":" + lineBackup);
+            } else {
+                sb.append(lineBackup);
+            }
             return true;
         } else {
             if (grepFlags.contains("-v")) {
-                sb.append(lineBackup);
+                if (grepFlags.contains("-n")) {
+                    sb.append(lineNumber + ":" + lineBackup);
+                } else {
+                    sb.append(lineBackup);
+                }
                 return true;
             }
             return false;
