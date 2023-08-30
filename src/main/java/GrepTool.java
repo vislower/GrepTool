@@ -22,10 +22,12 @@ class GrepTool {
                 int lineNumber = 1;
                 while ((line = reader.readLine()) != null) {
                     boolean match = matchPattern(pattern, sb, grepFlags, line, lineNumber);
-                    if (match && grepFlags.contains("-l")) {
-                        sb.append(file);
+                    if (match) {
+                        if (grepFlags.contains("-l")) {
+                            sb.append(file);
+                        }
+                        sb.append("\n");
                     }
-                    sb.append("\n");
                     lineNumber++;
                 }
 
