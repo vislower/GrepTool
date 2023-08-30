@@ -20,9 +20,8 @@ class GrepTool {
                 BufferedReader reader = new BufferedReader(new FileReader(new File(file)));
                 String line;
                 while ((line = reader.readLine()) != null) {
-                    if (grepFlags.contains("-i")) {
-                        line.toLowerCase();
-                    }
+                    boolean match = matchPattern(pattern, sb, grepFlags, line);
+
                 }
 
 
@@ -35,6 +34,43 @@ class GrepTool {
         }
 
         return sb.toString();
+    }
+
+    boolean matchPattern(String patternToMatch, StringBuilder sb, Set<String> grepFlags, String line) {
+        String lineBackup = line; // keep backup of original line
+        if (grepFlags.contains("-i")) {
+            line = line.toLowerCase();
+            patternToMatch = patternToMatch.toLowerCase();
+        }
+
+        if (grepFlags.contains("-x")) {
+            if (line.equals(patternToMatch) && !grepFlags.contains("-v")) {
+                if (grepFlags.contains("-l")) {
+                    return true;
+                }
+                sb.append(lineBackup);
+                return true;
+            } else if (grepFlags.contains("-v")) {
+                sb.append(lineBackup);
+                return true;
+            } else {
+                return false;
+            }
+        }
+
+        if (line.contains(patternToMatch) && !grepFlags.contains("-v")) {
+            if (grepFlags.contains("-l")) {
+                return true;
+            }
+            int startIndex = line.indexOf(patternToMatch);
+            sb.append(lineBackup.substring(startIndex, startIndex+patternToMatch.length()));
+            return true;
+        } else if (grepFlags.contains("-v")) {
+            // capture what doesn't match
+            return true;
+        }
+        
+        return false;
     }
 
 }
