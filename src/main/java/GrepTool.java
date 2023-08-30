@@ -21,7 +21,7 @@ class GrepTool {
                 String line;
                 int lineNumber = 1;
                 while ((line = reader.readLine()) != null) {
-                    boolean match = matchPattern(pattern, sb, grepFlags, line, lineNumber);
+                    boolean match = matchPattern(pattern, sb, grepFlags, line, lineNumber, file);
                     if (match) {
                         if (grepFlags.contains("-l")) {
                             sb.append(file);
@@ -30,7 +30,6 @@ class GrepTool {
                     }
                     lineNumber++;
                 }
-
 
                 reader.close();
             } catch (IOException ioe) {
@@ -42,7 +41,7 @@ class GrepTool {
         return sb.length() == 0 ? "" : sb.toString();
     }
 
-    boolean matchPattern(String patternToMatch, StringBuilder sb, Set<String> grepFlags, String line, int lineNumber) {
+    boolean matchPattern(String patternToMatch, StringBuilder sb, Set<String> grepFlags, String line, int lineNumber, String fileName) {
         String lineBackup = line; // keep backup of original line
         if (grepFlags.contains("-i")) {
             line = line.toLowerCase();
@@ -52,20 +51,21 @@ class GrepTool {
         if (grepFlags.contains("-x")) {
             if (line.equals(patternToMatch) && !grepFlags.contains("-v")) {
                 if (grepFlags.contains("-l")) {
+                    sb.append(fileName);
                     return true;
                 }
 
                 if (grepFlags.contains("-n")) {
-                    sb.append(lineNumber + ":" + lineBackup);
+                    sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
                 } else {
-                    sb.append(lineBackup);
+                    sb.append(fileName + ":" + lineBackup);
                 }
                 return true;
             } else if (grepFlags.contains("-v")) {
                 if (grepFlags.contains("-n")) {
-                    sb.append(lineNumber + ":" + lineBackup);
+                    sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
                 } else {
-                    sb.append(lineBackup);
+                    sb.append(fileName + ":" + lineBackup);
                 }
                 return true;
             } else {
@@ -78,20 +78,21 @@ class GrepTool {
                 return false;
             }
             if (grepFlags.contains("-l")) {
+                sb.append(fileName);
                 return true;
             }
             if (grepFlags.contains("-n")) {
-                    sb.append(lineNumber + ":" + lineBackup);
+                sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
             } else {
-                sb.append(lineBackup);
+                sb.append(fileName + ":" + lineBackup);
             }
             return true;
         } else {
             if (grepFlags.contains("-v")) {
                 if (grepFlags.contains("-n")) {
-                    sb.append(lineNumber + ":" + lineBackup);
+                    sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
                 } else {
-                    sb.append(lineBackup);
+                    sb.append(fileName + ":" + lineBackup);
                 }
                 return true;
             }
