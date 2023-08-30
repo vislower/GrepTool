@@ -17,16 +17,13 @@ class GrepTool {
         for (String file : files) {
 
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(new File(file)));
+                BufferedReader reader = new BufferedReader(new FileReader(new File("C:\\Users\\paolo\\Code\\GrepTool\\src\\main\\java\\" + file)));
                 String line;
                 int lineNumber = 1;
                 while ((line = reader.readLine()) != null) {
-                    boolean match = matchPattern(pattern, sb, grepFlags, line, lineNumber, file);
-                    if (match) {
-                        if (grepFlags.contains("-l")) {
-                            sb.append(file);
-                        }
-                        sb.append("\n");
+                    boolean match = matchPattern(pattern, sb, grepFlags, line, lineNumber, file, files.size() > 1);
+                    if (match && grepFlags.contains("-l")) { // don't print multiple times same file name
+                        break;
                     }
                     lineNumber++;
                 }
@@ -41,7 +38,7 @@ class GrepTool {
         return sb.length() == 0 ? "" : sb.toString();
     }
 
-    boolean matchPattern(String patternToMatch, StringBuilder sb, Set<String> grepFlags, String line, int lineNumber, String fileName) {
+    boolean matchPattern(String patternToMatch, StringBuilder sb, Set<String> grepFlags, String line, int lineNumber, String fileName, boolean multipleFiles) {
         String lineBackup = line; // keep backup of original line
         if (grepFlags.contains("-i")) {
             line = line.toLowerCase();
@@ -50,22 +47,34 @@ class GrepTool {
 
         if (grepFlags.contains("-x")) {
             if (line.equals(patternToMatch) && !grepFlags.contains("-v")) {
+                if (!sb.isEmpty()) {
+                    sb.append("\n");
+                }
                 if (grepFlags.contains("-l")) {
                     sb.append(fileName);
                     return true;
                 }
-
+                
+                if (multipleFiles) {
+                    sb.append(fileName + ":");
+                }
                 if (grepFlags.contains("-n")) {
-                    sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
+                    sb.append(lineNumber + ":" + lineBackup);
                 } else {
-                    sb.append(fileName + ":" + lineBackup);
+                    sb.append(lineBackup);
                 }
                 return true;
-            } else if (grepFlags.contains("-v")) {
+            } else if (grepFlags.contains("-v") && !line.equals(patternToMatch)) {
+                if (!sb.isEmpty()) {
+                    sb.append("\n");
+                }
+                if (multipleFiles) {
+                    sb.append(fileName + ":");
+                }
                 if (grepFlags.contains("-n")) {
-                    sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
+                    sb.append(lineNumber + ":" + lineBackup);
                 } else {
-                    sb.append(fileName + ":" + lineBackup);
+                    sb.append(lineBackup);
                 }
                 return true;
             } else {
@@ -77,22 +86,34 @@ class GrepTool {
             if (grepFlags.contains("-v")) {
                 return false;
             }
+            if (!sb.isEmpty()) {
+                sb.append("\n");
+            }
             if (grepFlags.contains("-l")) {
                 sb.append(fileName);
                 return true;
             }
+            if (multipleFiles) {
+                sb.append(fileName + ":");
+            }
             if (grepFlags.contains("-n")) {
-                sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
+                sb.append(lineNumber + ":" + lineBackup);
             } else {
-                sb.append(fileName + ":" + lineBackup);
+                sb.append(lineBackup);
             }
             return true;
         } else {
             if (grepFlags.contains("-v")) {
+                if (!sb.isEmpty()) {
+                    sb.append("\n");
+                }
+                if (multipleFiles) {
+                    sb.append(fileName + ":");
+                }
                 if (grepFlags.contains("-n")) {
-                    sb.append(fileName + ":" + lineNumber + ":" + lineBackup);
+                    sb.append(lineNumber + ":" + lineBackup);
                 } else {
-                    sb.append(fileName + ":" + lineBackup);
+                    sb.append(lineBackup);
                 }
                 return true;
             }
