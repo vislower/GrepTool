@@ -15,7 +15,7 @@ class GrepTool {
         for (String file : files) {
 
             try {
-                BufferedReader reader = new BufferedReader(new FileReader(new File("C:\\Users\\paolo\\Code\\GrepTool\\src\\main\\java\\" + file)));
+                BufferedReader reader = new BufferedReader(new FileReader(new File(file)));
                 String line;
                 int lineNumber = 1;
                 while ((line = reader.readLine()) != null) {
