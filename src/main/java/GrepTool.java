@@ -54,7 +54,7 @@ class GrepTool {
                 }
                 formatLine(multipleFiles, fileName, lineNumber, lineBackup, grepFlags, matches);
                 return true;
-            } else if (grepFlags.contains("-v") && !line.equals(patternToMatch)) {
+            } else if (!line.equals(patternToMatch) && grepFlags.contains("-v")) {
                 formatLine(multipleFiles, fileName, lineNumber, lineBackup, grepFlags, matches);
                 return true;
             } else {
@@ -72,13 +72,12 @@ class GrepTool {
             }
             formatLine(multipleFiles, fileName, lineNumber, lineBackup, grepFlags, matches);
             return true;
-        } else {
-            if (grepFlags.contains("-v")) {
-                formatLine(multipleFiles, fileName, lineNumber, lineBackup, grepFlags, matches);
-                return true;
-            }
-            return false;
+        } else if (grepFlags.contains("-v")) {
+            formatLine(multipleFiles, fileName, lineNumber, lineBackup, grepFlags, matches);
+            return true;
         }
+        
+        return false;
     
     }
 
